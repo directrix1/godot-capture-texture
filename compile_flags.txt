@@ -1,4 +1,5 @@
 -Igodot-cpp/gen/include
 -Igodot-cpp/include
+-Igodot-cpp/gdextension
 -I/usr/include
 -I.
