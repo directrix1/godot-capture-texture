@@ -1,0 +1,4 @@
+-Igodot-cpp/gen/include
+-Igodot-cpp/include
+-I/usr/include
+-I.

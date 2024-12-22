@@ -1,4 +1,4 @@
-#include "capture_texture.h"
+#include "capture_texture.hpp"
 
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/core/class_db.hpp>
