@@ -1,7 +1,12 @@
 #ifndef CAPTURE_TEXTURE_REGISTER_TYPES_HPP
 #define CAPTURE_TEXTURE_REGISTER_TYPES_HPP
 
-void initialize_gdextension_types();
-void uninitialize_gdextension_types();
+#include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/godot.hpp>
+
+using namespace godot;
+
+void initialize_gdextension_types(ModuleInitializationLevel p_level);
+void uninitialize_gdextension_types(ModuleInitializationLevel p_level);
 
 #endif // CAPTURE_TEXTURE_REGISTER_TYPES_HPP
