@@ -19,6 +19,7 @@ opts.Update(localEnv)
 Help(opts.GenerateHelpText(localEnv))
 
 env = localEnv.Clone()
+env.ParseConfig("pkg-config glibmm-2.4 giomm-2.4 libportal libpipewire-0.3 --cflags --libs")
 
 submodule_initialized = False
 dir_name = 'godot-cpp'
