@@ -17,9 +17,9 @@ extern "C" {
 using namespace Glib;
 
 struct portal_capture_dims {
-	unsigned int width;
-	unsigned int height;
-	unsigned int bytes_per_pixel;
+	int32_t width;
+	int32_t height;
+	int32_t bytes_per_pixel;
 };
 
 class PortalCapture : public Object {
@@ -29,13 +29,17 @@ protected:
 	RefPtr<MainLoop> _loop;
 	XdpPortal *_portal;
 	XdpSession *_xdpsession;
+	GVariant *_xdpsession_streams;
+	int _pipewireNodeID;
+	uint32_t _pipewireRemoteID;
 	volatile unsigned char *_frame_buffers[PORTAL_CAPTURE_FRAME_BUFS];
 	std::atomic<int> _active_frame;
-	std::atomic<struct portal_capture_dims> _dimensions;
+	struct portal_capture_dims _dimensions;
 
 	static void on_portal_screencast_session_started(GObject *source_object, GAsyncResult *res, PortalCapture *data);
 	static void on_portal_create_screencast_done(GObject *source_object, GAsyncResult *res, PortalCapture *data);
 	void setup_portal_screencast();
+	void setup_pipewire();
 
 public:
 	void init();

@@ -19,9 +19,39 @@ void PortalCapture::init() {
 	_capturing = false;
 }
 
+void PortalCapture::setup_pipewire() {
+	_pipewireNodeID = xdp_session_open_pipewire_remote(_xdpsession);
+	_xdpsession_streams = xdp_session_get_streams(_xdpsession);
+	printf("\tstreams: %s\n", g_variant_print(_xdpsession_streams, false));
+	GVariantIter *streamsIter = g_variant_iter_new(_xdpsession_streams);
+	GVariantIter *streamPropsIter;
+	uint32_t streamId;
+	while (g_variant_iter_loop(streamsIter, "(ua{sv})", &streamId, &streamPropsIter)) {
+		_pipewireRemoteID = streamId;
+		GString propName;
+		GVariant *propValue;
+		while (g_variant_iter_loop(streamPropsIter, "{sv}", &propName, &propValue)) {
+			if (std::string("size").compare(propName.str) == 0) {
+				int32_t w, h;
+				g_variant_get(propValue, "(ii)", &w, &h);
+				_dimensions = {
+					.width = w,
+					.height = h,
+					.bytes_per_pixel = 4,
+				};
+				printf("\tsize: %dx%d\n", _dimensions.width, _dimensions.height);
+			}
+		}
+		//g_variant_iter_free(streamPropsIter);
+	}
+}
+
 void PortalCapture::on_portal_screencast_session_started(GObject *source_object, GAsyncResult *res, PortalCapture *data) {
 	if (xdp_session_start_finish(data->_xdpsession, res, NULL)) {
 		printf("Session started!\n");
+		data->setup_pipewire();
+		printf("\tpw node id: %d\n", data->_pipewireNodeID);
+		printf("\tpw remote id: %d\n", data->_pipewireRemoteID);
 	} else {
 		printf("Session not started!\n");
 	}
