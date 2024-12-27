@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glibmm.h>
+#include <thread>
 extern "C" {
 #include <libportal/portal-helpers.h>
 #include <libportal/portal.h>
@@ -22,14 +23,25 @@ struct portal_capture_dims {
 	int32_t bytes_per_pixel;
 };
 
-class PortalCapture : public Object {
+enum portal_state {
+	PORTAL_NEW = 0,
+	PORTAL_INITED = 1,
+	PORTAL_READY_FOR_PIPEWIRE = 2,
+};
+
+class PortalCapture {
 private:
 protected:
+	std::thread _portal_thread;
 	std::atomic<bool> _capturing;
+	std::atomic<enum portal_state> _portal_state;
 	RefPtr<MainLoop> _loop;
 	XdpPortal *_portal;
 	XdpSession *_xdpsession;
 	GVariant *_xdpsession_streams;
+
+	std::thread _pipewire_thread;
+
 	int _pipewireNodeID;
 	uint32_t _pipewireRemoteID;
 	volatile unsigned char *_frame_buffers[PORTAL_CAPTURE_FRAME_BUFS];
@@ -39,6 +51,7 @@ protected:
 	static void on_portal_screencast_session_started(GObject *source_object, GAsyncResult *res, PortalCapture *data);
 	static void on_portal_create_screencast_done(GObject *source_object, GAsyncResult *res, PortalCapture *data);
 	void setup_portal_screencast();
+	void handoff_to_pipewire();
 	void setup_pipewire();
 
 public:

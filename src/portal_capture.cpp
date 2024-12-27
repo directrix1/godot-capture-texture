@@ -2,6 +2,7 @@
 #include "gio/gio.h"
 #include <glib.h>
 #include <glibmm.h>
+#include <iostream>
 extern "C" {
 #include <libportal/portal-helpers.h>
 #include <libportal/portal.h>
@@ -12,14 +13,22 @@ extern "C" {
 #include <spa/param/video/type-info.h>
 }
 
+using namespace std;
 using namespace Glib;
 
 void PortalCapture::init() {
 	_active_frame = 0;
 	_capturing = false;
+	_portal_state = PORTAL_NEW;
 }
 
 void PortalCapture::setup_pipewire() {
+	while (_portal_state != PORTAL_READY_FOR_PIPEWIRE) {
+	};
+	cout << "Pipewire setup:" << endl;
+}
+
+void PortalCapture::handoff_to_pipewire() {
 	_pipewireNodeID = xdp_session_open_pipewire_remote(_xdpsession);
 	_xdpsession_streams = xdp_session_get_streams(_xdpsession);
 	printf("\tstreams: %s\n", g_variant_print(_xdpsession_streams, false));
@@ -31,7 +40,7 @@ void PortalCapture::setup_pipewire() {
 		GString propName;
 		GVariant *propValue;
 		while (g_variant_iter_loop(streamPropsIter, "{sv}", &propName, &propValue)) {
-			if (std::string("size").compare(propName.str) == 0) {
+			if (string("size").compare(propName.str) == 0) {
 				int32_t w, h;
 				g_variant_get(propValue, "(ii)", &w, &h);
 				_dimensions = {
@@ -44,12 +53,13 @@ void PortalCapture::setup_pipewire() {
 		}
 		//g_variant_iter_free(streamPropsIter);
 	}
+	_portal_state = PORTAL_READY_FOR_PIPEWIRE;
 }
 
 void PortalCapture::on_portal_screencast_session_started(GObject *source_object, GAsyncResult *res, PortalCapture *data) {
 	if (xdp_session_start_finish(data->_xdpsession, res, NULL)) {
 		printf("Session started!\n");
-		data->setup_pipewire();
+		data->handoff_to_pipewire();
 		printf("\tpw node id: %d\n", data->_pipewireNodeID);
 		printf("\tpw remote id: %d\n", data->_pipewireRemoteID);
 	} else {
@@ -68,7 +78,8 @@ void PortalCapture::on_portal_create_screencast_done(GObject *source_object, GAs
 }
 
 void PortalCapture::setup_portal_screencast() {
-	this->_portal = xdp_portal_new();
+	_loop = MainLoop::create(false);
+	_portal = xdp_portal_new();
 	xdp_portal_create_screencast_session(this->_portal,
 			XdpOutputType(XDP_OUTPUT_MONITOR | XDP_OUTPUT_VIRTUAL | XDP_OUTPUT_WINDOW),
 			XDP_SCREENCAST_FLAG_NONE,
@@ -78,12 +89,13 @@ void PortalCapture::setup_portal_screencast() {
 			NULL, // int *cancellable,
 			(GAsyncReadyCallback)(&this->on_portal_create_screencast_done), // int callback,
 			this);
-	this->_loop->run();
+	_loop->run();
 }
 
 void PortalCapture::startCapturing() {
-	this->_loop = MainLoop::create(false);
-	this->setup_portal_screencast();
+	_portal_state = PORTAL_INITED;
+	_portal_thread = thread(&PortalCapture::setup_portal_screencast, this);
+	_pipewire_thread = thread(&PortalCapture::setup_pipewire, this);
 }
 
 bool PortalCapture::isCapturing() {
@@ -111,6 +123,8 @@ int main() {
 	PortalCapture pc;
 	pc.init();
 	pc.startCapturing();
+	while (true) {
+	}
 	return 0;
 }
 #endif
