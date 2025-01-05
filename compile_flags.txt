@@ -15,5 +15,6 @@
 -Igodot-cpp/gen/include
 -Igodot-cpp/include
 -Igodot-cpp/gdextension
+-I/usr/local/include
 -I/usr/include
 -I.

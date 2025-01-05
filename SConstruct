@@ -53,6 +53,7 @@ if env["platform"] == "macos" or env["platform"] == "ios":
     filepath = "{}.framework/".format(env["platform"])
     file = "{}.{}.{}".format(libname, env["platform"], env["target"])
 
+env.Append(LIBS=['obs-source-host'], CPPPATH=['/usr/local/include'])
 libraryfile = "bin/{}/{}{}".format(env["platform"], filepath, file)
 library = env.SharedLibrary(
     libraryfile,

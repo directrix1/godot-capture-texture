@@ -45,6 +45,7 @@ void CaptureTexture::create_internal_image(int width, int height) {
 	// Now turn the Image into an ImageTexture
 	// (the 'this' object IS already an ImageTexture, so we can just call create_from_image)
 	set_image(internal_image);
+
 	// If you want filter, repeats, or other flags, you can set them here, e.g.:
 	// set_filter(use_filter);
 	// set_repeat(false);
