@@ -12,6 +12,7 @@
 -I/usr/include/libmount
 -I/usr/include/blkid
 -I/usr/include/sysprof-6
+-I/usr/local/include
 -Igodot-cpp/gen/include
 -Igodot-cpp/include
 -Igodot-cpp/gdextension

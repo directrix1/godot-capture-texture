@@ -8,7 +8,7 @@ from methods import print_error
 libname = "capture_texture"
 projectdir = "demo"
 
-localEnv = Environment(tools=["default"], PLATFORM="")
+localEnv = Environment(ENV = os.environ, tools=["default"], PLATFORM="")
 
 customs = ["custom.py"]
 customs = [os.path.abspath(path) for path in customs]
@@ -19,7 +19,7 @@ opts.Update(localEnv)
 Help(opts.GenerateHelpText(localEnv))
 
 env = localEnv.Clone()
-env.ParseConfig("pkg-config glibmm-2.4 giomm-2.4 libportal libpipewire-0.3 --cflags --libs")
+env.ParseConfig("pkg-config shm_ringbuffers --cflags --libs")
 
 submodule_initialized = False
 dir_name = 'godot-cpp'
