@@ -1,6 +1,6 @@
 # Godot CaptureTexture
 
-Implements a TextureImage that streams its image data from a shared memory RGBA source via the [shm_ringbuffers](https://github.com/directrix1/shm_ringbuffers) library on platforms supported by the **shm_ringbuffers** library. This can be used to, for example, stream a scene from OBS into your running Godot project, via the [obs-shmem-filter](https://github.com/directrix1/obs-shmem-filter). This project only supports Godot 4.x.
+Implements a TextureImage that streams its image data from a shared memory RGBA source via the [shm_ringbuffers](https://github.com/directrix1/shm_ringbuffers) library on platforms supported by the **shm_ringbuffers** library. This can be used to, for example, stream a scene from OBS into your running Godot project, via the [obs-shmem-ringbuffer](https://github.com/directrix1/obs-shmem-buffer). This project only supports Godot 4.x.
 
 ## Building Prerequisites
 
