@@ -1,3 +1,27 @@
+/******************************************************************************
+ *
+ * Copyright (c) 2025-present Edward Andrew Flick.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
 #include "capture_texture.hpp"
 #include <shm_ringbuffers.h>
 // #include <chrono>
@@ -52,8 +76,6 @@ void CaptureTexture::connect_shm_buffer(String shm_name, String ring_buffer_name
 	internal_image = Image::create(width, height, false, Image::FORMAT_RGBA8);
 	frame_size = width * height * 4;
 
-	pba.resize(frame_size);
-
 	set_image(internal_image);
 }
 
@@ -62,9 +84,7 @@ void CaptureTexture::update_texture_contents() {
 		return;
 	}
 
-	memcpy((void *)pba.ptrw(), (const void *)srb_subscriber_get_most_recent_buffer(srb), frame_size);
-
-	internal_image->set_data(internal_image->get_width(), internal_image->get_height(), false, Image::FORMAT_RGBA8, pba);
+	memcpy((void *)internal_image->ptrw(), (const void *)srb_subscriber_get_most_recent_buffer(srb), frame_size);
 
 	update(internal_image);
 }
