@@ -173,7 +173,11 @@ void CaptureTexture::update_texture_contents() {
 		return;
 	}
 
-	memcpy((void *)internal_image->ptrw(), (const void *)srb_subscriber_get_most_recent_buffer(srb), frame_size);
+	uint8_t *b = srb_subscriber_get_most_recent_buffer(srb);
 
-	update(internal_image);
+	if (b) {
+		memcpy((void *)internal_image->ptrw(), (const void *)b, frame_size);
+
+		update(internal_image);
+	}
 }
