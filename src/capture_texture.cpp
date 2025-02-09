@@ -111,7 +111,7 @@ void CaptureTexture::ensure_size() {
 	UtilityFunctions::print("SRB: Resized internal image");
 	frame_size = width * height * 4;
 	internal_image = Image::create(width, height, false, Image::FORMAT_RGBA8);
-	internal_image->fill(Color(1.0, 0.2, 0.9, 1.0));
+	internal_image->fill(Color(1.0, 0.0, 1.0, 1.0));
 	set_image(internal_image);
 }
 
